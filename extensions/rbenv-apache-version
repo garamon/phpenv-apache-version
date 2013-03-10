@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Usage: phpenv apache-version <version>
+
+set -e
+[ -n "$RBENV_DEBUG" ] && set -x
+
+# Provide rbenv completions
+if [ "$1" = "--complete" ]; then
+  exec rbenv-versions --bare
+fi
+
+PHPENV_APACHE_VERSION="$1"
+PHPENV_APACHE_VERSION_FILE="${RBENV_ROOT}/php-apache-version"
+
+if [ -n "$PHPENV_APACHE_VERSION" ]; then
+  rbenv-version-file-write "$PHPENV_APACHE_VERSION_FILE" "$PHPENV_APACHE_VERSION"
+else
+  rbenv-version-file-read "$PHPENV_APACHE_VERSION_FILE" ||
+  rbenv-help --usage apache-version >&2
+  exit 1
+fi
+
+APACHE_ROOT="/etc/httpd"
+APACHE_MODULE_PATH="${APACHE_ROOT}/modules"
+
+PHPENV_PREFIX_PATH="${RBENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
+PHP_MODULE_PATH="$PHPENV_PREFIX_PATH/libphp5.so"
+
+if [ ! -d "$APACHE_MODULE_PATH" ]; then
+  echo "Make sure the apache is installed. \
+  Directory not found ${APACHE_MODULE_PATH}" >&2
+  exit 1
+fi
+
+if [ ! -f "$PHP_MODULE_PATH" ]; then
+  echo "Make sure the specified version is installed. \
+  Apache module not found ${PHP_MODULE_PATH}" >&2
+  exit 1
+fi
+
+echo "copy ${PHP_MODULE_PATH} to ${APACHE_MODULE_PATH}"
+cp "$PHP_MODULE_PATH" "$APACHE_MODULE_PATH"
+
+echo "Restarting apache..."
+sudo service httpd restart
