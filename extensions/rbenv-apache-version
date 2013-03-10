@@ -20,26 +20,35 @@ else
   exit 1
 fi
 
-APACHE_ROOT="/etc/httpd"
-APACHE_MODULE_PATH="${APACHE_ROOT}/modules"
+if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
+  PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
+fi
+
+if [ ! -d "$PHPENV_APACHE_MODULE_PATH" ]; then
+  echo "Make sure the apache is installed." >&2
+  echo "Directory not found ${PHPENV_APACHE_MODULE_PATH}" >&2
+  exit 1
+fi
 
 PHPENV_PREFIX_PATH="${RBENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
-PHP_MODULE_PATH="$PHPENV_PREFIX_PATH/libphp5.so"
-
-if [ ! -d "$APACHE_MODULE_PATH" ]; then
-  echo "Make sure the apache is installed. \
-  Directory not found ${APACHE_MODULE_PATH}" >&2
-  exit 1
-fi
+PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp5.so"
 
 if [ ! -f "$PHP_MODULE_PATH" ]; then
-  echo "Make sure the specified version is installed. \
-  Apache module not found ${PHP_MODULE_PATH}" >&2
+  echo "Make sure the specified version is installed." >&2
+  echo "Apache module not found ${PHP_MODULE_PATH}" >&2
   exit 1
 fi
 
-echo "copy ${PHP_MODULE_PATH} to ${APACHE_MODULE_PATH}"
-cp "$PHP_MODULE_PATH" "$APACHE_MODULE_PATH"
+echo "copy ${PHP_MODULE_PATH} to ${PHPENV_APACHE_MODULE_PATH}"
+cp "$PHP_MODULE_PATH" "$PHPENV_APACHE_MODULE_PATH"
 
 echo "Restarting apache..."
-sudo service httpd restart
+
+OS=`uname`
+if [ "$OS" == "Darwin" ]; then
+  sudo apachectl restart
+else
+  if [ -f /etc/redhat-release ] ; then
+    sudo service httpd restart
+  fi
+fi

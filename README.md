@@ -12,6 +12,17 @@ Installation
     $ cd phpenv-apache-version
     $ ./install.sh
 
+### Mac OS X
+
+    $ git clone https://github.com/garamon/phpenv-apache-version
+    $ cd phpenv-apache-version
+    $ ./install.sh
+
+    $ echo 'export PHPENV_APACHE_MODULE_PATH="[apache_module_dir]"' >> ~/.bashrc
+
+    ex)
+    $ echo 'export PHPENV_APACHE_MODULE_PATH="/usr/local/Cellar/httpd/2.2.23/libexec"' >> ~/.bashrc
+
 Command Reference
 -----------------
 ### phpenv apache-version
