@@ -8,15 +8,13 @@ Switing php modules for Apache
 Installation
 ------------
 
-    $ git clone https://github.com/garamon/phpenv-apache-version
-    $ cd phpenv-apache-version
-    $ ./install.sh
+    $ git clone https://github.com/garamon/phpenv-apache-version ~/.phpenv/plugins/phpenv-apache-version
+    $ phpenv rehash
 
 ### Mac OS X
 
-    $ git clone https://github.com/garamon/phpenv-apache-version
-    $ cd phpenv-apache-version
-    $ ./install.sh
+    $ git clone https://github.com/garamon/phpenv-apache-version ~/.phpenv/plugins/phpenv-apache-version
+    $ phpenv rehash
 
     $ echo 'export PHPENV_APACHE_MODULE_PATH="[apache_module_dir]"' >> ~/.bashrc
 
@@ -32,6 +30,8 @@ Sets the php module to be used in apache by writing the version name to the ~/.p
 
 LICENSE
 -------
+(The MIT License)
+
 Copyright &copy; 2013 Koichi Noto
 
 Permission is hereby granted, free of charge, to any person obtaining
