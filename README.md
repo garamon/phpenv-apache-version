@@ -15,8 +15,8 @@ Installation
     $ echo 'export PHPENV_APACHE_MODULE_PATH="[apache_module_dir]"' >> ~/.bashrc
     $ source ~/.bashrc
 
-    ex)
-    $ echo 'export PHPENV_APACHE_MODULE_PATH="/usr/local/Cellar/httpd/2.2.23/libexec"' >> ~/.bashrc
+    ex) If using Homebrew
+    $ echo 'export PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"' >> ~/.bashrc
     $ source ~/.bashrc
 
 Command Reference
