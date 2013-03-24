@@ -20,13 +20,20 @@ else
   exit 1
 fi
 
-if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
-  PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
+if command -v brew >/dev/null; then
+  if [ -d "$(brew --prefix httpd)" ]; then
+    PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"
+  fi
+else
+  if [ -f /etc/redhat-release ] ; then
+    PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
+  elif [ -f /etc/debian_version] ; then
+    PHPENV_APACHE_MODULE_PATH="/usr/lib/apache2/modules"
+  fi
 fi
 
-if [ ! -d "$PHPENV_APACHE_MODULE_PATH" ]; then
-  echo "Make sure the apache is installed." >&2
-  echo "Directory not found ${PHPENV_APACHE_MODULE_PATH}" >&2
+if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
+  echo "Sorry your OS is not supported." >&2
   exit 1
 fi
 
@@ -50,5 +57,7 @@ if [ "$OS" == "Darwin" ]; then
 else
   if [ -f /etc/redhat-release ] ; then
     sudo service httpd restart
+  elif [ -f /etc/debian_version] ; then
+    sudo service apache2 restart
   fi
 fi
