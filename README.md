@@ -1,23 +1,12 @@
 phpenv - apache version
 ======================
 
-phpenv extension.
-
-Switing php modules for Apache
+This is a plugin for phpenv that switch php modules for apache
 
 Installation
 ------------
 
     $ git clone https://github.com/garamon/phpenv-apache-version ~/.phpenv/plugins/phpenv-apache-version
-
-### Mac OS X
-#### Add apache module path to your $PATH
-    $ echo 'export PHPENV_APACHE_MODULE_PATH="[apache_module_dir]"' >> ~/.bashrc
-    $ source ~/.bashrc
-
-    ex) If using Homebrew
-    $ echo 'export PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"' >> ~/.bashrc
-    $ source ~/.bashrc
 
 Command Reference
 -----------------
