@@ -12,6 +12,18 @@ fi
 PHPENV_APACHE_VERSION="$1"
 PHPENV_APACHE_VERSION_FILE="${RBENV_ROOT}/php-apache-version"
 
+DARWIN_HTTPD_NAME="$2"
+
+usage_darwin() {
+  echo "$(rbenv-help --usage apache-version) [system | httpd22 | httpd24]" >&2
+  echo >&2
+  echo "  You need specify which version of apache you use." >&2
+  echo "    system: OS bundled httpd (/usr/sbin/httpd)" >&2
+  echo "    httpd22: Homebrew httpd22" >&2
+  echo "    httpd24: Homebrew httpd24" >&2
+  exit 1
+}
+
 if [ -n "$PHPENV_APACHE_VERSION" ]; then
   rbenv-version-file-write "$PHPENV_APACHE_VERSION_FILE" "$PHPENV_APACHE_VERSION"
 else
@@ -20,10 +32,25 @@ else
   exit 1
 fi
 
-if command -v brew >/dev/null; then
-  if [ -d "$(brew --prefix httpd)" ]; then
-    PHPENV_APACHE_MODULE_PATH="$(brew --prefix httpd)/libexec"
-  fi
+OS=`uname`
+
+if [ "$OS" == "Darwin" ]; then
+  case $DARWIN_HTTPD_NAME in
+    system)
+      PHPENV_APACHE_MODULE_PATH=/usr/libexec/apache2
+      ;;
+
+    httpd*)
+      if command -v brew >/dev/null; then
+        if [ -d "$(brew --prefix $DARWIN_HTTPD_NAME 2>/dev/null)" ]; then
+          PHPENV_APACHE_MODULE_PATH="$(brew --prefix $DARWIN_HTTPD_NAME 2>/dev/null)/libexec"
+        fi
+      fi
+      ;;
+    *)
+      usage_darwin
+      ;;
+  esac
 else
   if [ -f /etc/redhat-release ] ; then
     PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
@@ -33,8 +60,12 @@ else
 fi
 
 if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
-  echo "Sorry your OS is not supported." >&2
-  exit 1
+  if [ "$OS" == "Darwin" ]; then
+    usage_darwin
+  else
+    echo "Sorry your OS is not supported." >&2
+    exit 1
+  fi
 fi
 
 PHPENV_PREFIX_PATH="${RBENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
@@ -47,13 +78,21 @@ if [ ! -f "$PHP_MODULE_PATH" ]; then
 fi
 
 echo "copy ${PHP_MODULE_PATH} to ${PHPENV_APACHE_MODULE_PATH}"
-cp "$PHP_MODULE_PATH" "$PHPENV_APACHE_MODULE_PATH"
+sudo cp -p "$PHP_MODULE_PATH" "$PHPENV_APACHE_MODULE_PATH"
 
 echo "Restarting apache..."
 
-OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  sudo apachectl restart
+  case $DARWIN_HTTPD_NAME in
+    system)
+      DARWIN_HTTPD_APACHECTL=/usr/sbin/apachectl
+      ;;
+
+    httpd*)
+      DARWIN_HTTPD_APACHECTL=$(brew --prefix $DARWIN_HTTPD_NAME)/bin/apachectl
+      ;;
+  esac
+  sudo $DARWIN_HTTPD_APACHECTL -k restart
 else
   if [ -f /etc/redhat-release ] ; then
     sudo service httpd restart
