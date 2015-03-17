@@ -29,6 +29,8 @@ else
     PHPENV_APACHE_MODULE_PATH="/etc/httpd/modules"
   elif [ -f /etc/debian_version ] ; then
     PHPENV_APACHE_MODULE_PATH="/usr/lib/apache2/modules"
+  elif [[ "$(uname)" == 'Darwin' ]] ; then
+    PHPENV_APACHE_MODULE_PATH="/usr/libexec/apache2"
   fi
 fi
 
