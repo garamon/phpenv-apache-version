@@ -2,21 +2,21 @@
 # Usage: phpenv apache-version <version>
 
 set -e
-[ -n "$RBENV_DEBUG" ] && set -x
+[ -n "$PHPENV_DEBUG" ] && set -x
 
-# Provide rbenv completions
+# Provide phpenv completions
 if [ "$1" = "--complete" ]; then
-  exec rbenv-versions --bare
+  exec phpenv-versions --bare
 fi
 
 PHPENV_APACHE_VERSION="$1"
-PHPENV_APACHE_VERSION_FILE="${RBENV_ROOT}/php-apache-version"
+PHPENV_APACHE_VERSION_FILE="${PHPENV_ROOT}/php-apache-version"
 
 if [ -n "$PHPENV_APACHE_VERSION" ]; then
-  rbenv-version-file-write "$PHPENV_APACHE_VERSION_FILE" "$PHPENV_APACHE_VERSION"
+  phpenv-version-file-write "$PHPENV_APACHE_VERSION_FILE" "$PHPENV_APACHE_VERSION"
 else
-  rbenv-version-file-read "$PHPENV_APACHE_VERSION_FILE" ||
-  rbenv-help --usage apache-version >&2
+  phpenv-version-file-read "$PHPENV_APACHE_VERSION_FILE" ||
+  phpenv-help --usage apache-version >&2
   exit 1
 fi
 
@@ -37,7 +37,7 @@ if [ -z "$PHPENV_APACHE_MODULE_PATH" ]; then
   exit 1
 fi
 
-PHPENV_PREFIX_PATH="${RBENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
+PHPENV_PREFIX_PATH="${PHPENV_ROOT}/versions/${PHPENV_APACHE_VERSION}"
 
 if [[ $PHPENV_APACHE_VERSION =~ ^5 ]]; then
   PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp5.so"
