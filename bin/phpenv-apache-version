@@ -43,6 +43,8 @@ if [[ $PHPENV_APACHE_VERSION =~ ^5 ]]; then
   PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp5.so"
 elif [[ $PHPENV_APACHE_VERSION =~ ^7 ]]; then
   PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp7.so"
+elif [[ $PHPENV_APACHE_VERSION =~ ^8 ]]; then
+  PHP_MODULE_PATH="${PHPENV_PREFIX_PATH}/libphp.so"
 fi
 
 if [ ! -f "$PHP_MODULE_PATH" ]; then
